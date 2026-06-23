@@ -1,0 +1,2 @@
+-- SQL Server schema will be added with the data access implementation.
+-- Planned tables: Users and Tasks.
