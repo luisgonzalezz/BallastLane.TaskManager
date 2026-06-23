@@ -144,13 +144,27 @@ AI suggestions were validated through:
 
 ## 7. Next Planned Steps
 
+## 7. Infrastructure Foundations
+
+The Infrastructure layer began with cross-cutting services and database scripts:
+
+- `SqlConnectionFactory` reads `ConnectionStrings:DefaultConnection` and creates `SqlConnection` instances.
+- `PasswordHasher` implements PBKDF2 password hashing with a random salt.
+- `JwtTokenGenerator` creates signed JWTs with user id and email claims.
+- `DependencyInjection` registers Infrastructure services behind Application abstractions.
+- `database/schema.sql` creates the SQL Server database, `Users`, and `Tasks`.
+- `database/seed.sql` adds demo records for presentation.
+- `database/reset.sql` runs schema and seed scripts together through SQLCMD mode.
+
+Infrastructure tests validate hashing, password verification, JWT claims, and connection string usage without requiring a live SQL Server connection yet.
+
+## 8. Next Planned Steps
+
 The remaining implementation will continue in this order:
 
-1. SQL Server schema and seed scripts.
-2. Manual ADO.NET repositories in Infrastructure.
-3. Password hashing and JWT token generation in Infrastructure.
-4. Dependency injection composition.
-5. ASP.NET Core controllers for auth and task CRUD.
-6. API integration tests.
-7. Angular authentication flow and task CRUD screens.
-8. Final README setup instructions and demo credentials.
+1. Manual ADO.NET repositories in Infrastructure.
+2. Dependency injection composition for repositories.
+3. ASP.NET Core controllers for auth and task CRUD.
+4. API integration tests.
+5. Angular authentication flow and task CRUD screens.
+6. Final README setup instructions and demo credentials.

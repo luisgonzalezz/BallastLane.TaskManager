@@ -1,2 +1,52 @@
--- SQL Server schema will be added with the data access implementation.
--- Planned tables: Users and Tasks.
+IF DB_ID(N'BallastLaneTaskManager') IS NULL
+BEGIN
+    CREATE DATABASE BallastLaneTaskManager;
+END;
+GO
+
+USE BallastLaneTaskManager;
+GO
+
+IF OBJECT_ID(N'dbo.Tasks', N'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.Tasks;
+END;
+GO
+
+IF OBJECT_ID(N'dbo.Users', N'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.Users;
+END;
+GO
+
+CREATE TABLE dbo.Users
+(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_Users PRIMARY KEY,
+    Email NVARCHAR(256) NOT NULL,
+    PasswordHash NVARCHAR(512) NOT NULL,
+    CreatedAt DATETIME2(7) NOT NULL
+);
+GO
+
+CREATE UNIQUE INDEX UX_Users_Email
+ON dbo.Users (Email);
+GO
+
+CREATE TABLE dbo.Tasks
+(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_Tasks PRIMARY KEY,
+    UserId UNIQUEIDENTIFIER NOT NULL,
+    Title NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(1000) NOT NULL,
+    Status INT NOT NULL,
+    DueDate DATETIME2(7) NOT NULL,
+    CreatedAt DATETIME2(7) NOT NULL,
+    UpdatedAt DATETIME2(7) NOT NULL,
+    CONSTRAINT FK_Tasks_Users_UserId FOREIGN KEY (UserId) REFERENCES dbo.Users(Id),
+    CONSTRAINT CK_Tasks_Status CHECK (Status IN (1, 2, 3))
+);
+GO
+
+CREATE INDEX IX_Tasks_UserId
+ON dbo.Tasks (UserId);
+GO
