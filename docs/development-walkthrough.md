@@ -254,9 +254,22 @@ The first Angular slice connected the frontend to the authentication API shape:
 
 Frontend tests cover session storage, logout behavior, bearer-token injection, and route protection. The Angular production build was also verified.
 
-## 14. Next Planned Steps
+## 14. Angular Task CRUD Screen
+
+The task workspace now connects to the task API and supports the main task workflow:
+
+- `TaskService` wraps `GET`, `POST`, `PUT`, and `DELETE` calls to `/api/tasks`.
+- The Angular UI lists authenticated user tasks.
+- Users can create tasks with title, description, and due date.
+- Users can edit existing tasks, including status changes.
+- Users can delete tasks after a confirmation prompt.
+- The task screen keeps the API status enum values aligned with the backend: `Pending = 1`, `InProgress = 2`, and `Completed = 3`.
+
+Frontend tests verify the task HTTP contract and the component behavior for loading, creating, updating, and deleting tasks.
+
+## 15. Next Planned Steps
 
 The remaining implementation will continue in this order:
 
-1. Angular task CRUD screens.
+1. Add real demo credentials to the seed script.
 2. Final README setup instructions and demo credentials.

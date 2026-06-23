@@ -19,7 +19,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -102,9 +104,10 @@ label {
   font-weight: 700;
 }
 
-input {
+input,
+select,
+textarea {
   width: 100%;
-  min-height: 46px;
   border: 1px solid #cbd3c4;
   border-radius: 6px;
   background: #ffffff;
@@ -112,7 +115,20 @@ input {
   padding: 0 14px;
 }
 
-input:focus {
+input,
+select {
+  min-height: 46px;
+}
+
+textarea {
+  min-height: 112px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
   border-color: #1660b7;
   box-shadow: 0 0 0 3px rgba(22, 96, 183, 0.14);
   outline: none;
@@ -181,6 +197,110 @@ form button {
   color: #52616d;
 }
 
+.muted {
+  color: #52616d;
+}
+
+.task-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.task-form-panel,
+.task-list-section {
+  border: 1px solid #d9dfd4;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.84);
+  padding: 24px;
+}
+
+.task-form-panel h2,
+.task-list-header h2 {
+  margin-bottom: 0;
+}
+
+.task-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 150px;
+  gap: 14px;
+}
+
+.form-actions,
+.task-list-header,
+.task-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-actions {
+  flex-wrap: wrap;
+}
+
+.task-list-section {
+  display: grid;
+  gap: 14px;
+}
+
+.task-list-header {
+  justify-content: space-between;
+}
+
+.task-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  border: 1px solid #dfe5d9;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.task-row-main {
+  min-width: 0;
+}
+
+.task-row h3 {
+  margin: 10px 0 8px;
+  color: #1f2933;
+  font-size: 1.08rem;
+}
+
+.task-row p {
+  margin-bottom: 12px;
+  color: #52616d;
+  line-height: 1.45;
+}
+
+.task-row time {
+  color: #344054;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.status-pill {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border-radius: 999px;
+  background: #e7f0e4;
+  color: #315b35;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0 10px;
+}
+
+.status-pill.completed {
+  background: #e6eef9;
+  color: #194f90;
+}
+
+.danger-button {
+  color: #9b1c13;
+}
+
 @media (max-width: 640px) {
   .auth-shell,
   .workspace-shell {
@@ -192,6 +312,18 @@ form button {
   }
 
   .workspace-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .task-layout,
+  .task-row,
+  .task-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-list-header,
+  .task-row-actions {
     align-items: stretch;
     flex-direction: column;
   }
