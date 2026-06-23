@@ -181,8 +181,6 @@ The task use case was expanded from create/list to full CRUD:
 
 The service layer enforces ownership by always querying tasks with both task id and user id.
 
-## 10. Next Planned Steps
-
 ## 10. API Authentication Slice
 
 The first API slice exposed authentication-related HTTP endpoints:
@@ -203,11 +201,31 @@ The private endpoint uses `[Authorize]`, and integration tests verify:
 
 For this slice, the API integration tests replace `IAuthService` with a fake service while still generating and validating real JWTs through the same signing configuration. This keeps the tests focused on routing, controller behavior, and authentication middleware.
 
-## 11. Next Planned Steps
+## 11. Task API Slice
+
+The task CRUD use case is now exposed over HTTP:
+
+- `GET /api/tasks`
+- `GET /api/tasks/{id}`
+- `POST /api/tasks`
+- `PUT /api/tasks/{id}`
+- `DELETE /api/tasks/{id}`
+
+All task endpoints require JWT authentication. The controller reads the authenticated user id from the token claim and never accepts `UserId` from the request body.
+
+Integration tests verify:
+
+- task endpoints return `401 Unauthorized` without a token.
+- authenticated users can list tasks.
+- authenticated users can read one task.
+- authenticated users can create, update, and delete tasks.
+
+This completes the backend API surface required for task CRUD and authentication.
+
+## 12. Next Planned Steps
 
 The remaining implementation will continue in this order:
 
-1. ASP.NET Core `TasksController` for task CRUD.
-2. API integration tests for task endpoints.
-3. Angular authentication flow and task CRUD screens.
-4. Final README setup instructions and demo credentials.
+1. Connect API integration tests to real LocalDB services for end-to-end coverage.
+2. Angular authentication flow and task CRUD screens.
+3. Final README setup instructions and demo credentials.
