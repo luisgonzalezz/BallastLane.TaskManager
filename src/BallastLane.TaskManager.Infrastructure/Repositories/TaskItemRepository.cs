@@ -39,6 +39,30 @@ public sealed class TaskItemRepository : ITaskItemRepository
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
+    public async Task<TaskItem?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken)
+    {
+        const string sql =
+            """
+            SELECT TOP (1) Id, UserId, Title, Description, Status, DueDate, CreatedAt, UpdatedAt
+            FROM dbo.Tasks
+            WHERE Id = @Id AND UserId = @UserId;
+            """;
+
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@Id", id);
+        command.Parameters.AddWithValue("@UserId", userId);
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        if (!await reader.ReadAsync(cancellationToken))
+        {
+            return null;
+        }
+
+        return MapTask(reader);
+    }
+
     public async Task<IReadOnlyList<TaskItem>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
         const string sql =
@@ -62,6 +86,50 @@ public sealed class TaskItemRepository : ITaskItemRepository
         }
 
         return tasks;
+    }
+
+    public async Task UpdateAsync(TaskItem task, CancellationToken cancellationToken)
+    {
+        const string sql =
+            """
+            UPDATE dbo.Tasks
+            SET Title = @Title,
+                Description = @Description,
+                Status = @Status,
+                DueDate = @DueDate,
+                UpdatedAt = @UpdatedAt
+            WHERE Id = @Id AND UserId = @UserId;
+            """;
+
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@Id", task.Id);
+        command.Parameters.AddWithValue("@UserId", task.UserId);
+        command.Parameters.AddWithValue("@Title", task.Title);
+        command.Parameters.AddWithValue("@Description", task.Description);
+        command.Parameters.AddWithValue("@Status", (int)task.Status);
+        command.Parameters.Add("@DueDate", SqlDbType.DateTime2).Value = task.DueDate;
+        command.Parameters.Add("@UpdatedAt", SqlDbType.DateTime2).Value = task.UpdatedAt;
+
+        await command.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken)
+    {
+        const string sql =
+            """
+            DELETE FROM dbo.Tasks
+            WHERE Id = @Id AND UserId = @UserId;
+            """;
+
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@Id", id);
+        command.Parameters.AddWithValue("@UserId", userId);
+
+        await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
     private static TaskItem MapTask(SqlDataReader reader)

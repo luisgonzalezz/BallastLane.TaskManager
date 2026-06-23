@@ -96,6 +96,33 @@ public sealed class TaskItemTests
     }
 
     [Fact]
+    public void UpdateDetails_WithValidValues_UpdatesTaskAndTimestamp()
+    {
+        var task = TaskItem.Create(Guid.NewGuid(), "Title", "Description", DateTime.UtcNow.AddDays(1));
+        var originalUpdatedAt = task.UpdatedAt;
+        var newDueDate = DateTime.UtcNow.AddDays(3);
+
+        task.UpdateDetails("Updated title", "Updated description", newDueDate, TaskItemStatus.Completed);
+
+        Assert.Equal("Updated title", task.Title);
+        Assert.Equal("Updated description", task.Description);
+        Assert.Equal(newDueDate, task.DueDate);
+        Assert.Equal(TaskItemStatus.Completed, task.Status);
+        Assert.True(task.UpdatedAt >= originalUpdatedAt);
+    }
+
+    [Fact]
+    public void UpdateDetails_WithDefaultDueDate_ThrowsDomainValidationException()
+    {
+        var task = TaskItem.Create(Guid.NewGuid(), "Title", "Description", DateTime.UtcNow.AddDays(1));
+
+        var exception = Assert.Throws<DomainValidationException>(
+            () => task.UpdateDetails("Updated title", "Updated description", default, TaskItemStatus.InProgress));
+
+        Assert.Equal("Due date is required.", exception.Message);
+    }
+
+    [Fact]
     public void FromPersistence_WithStoredValues_RehydratesTask()
     {
         var id = Guid.NewGuid();

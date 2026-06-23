@@ -48,4 +48,73 @@ public sealed class TaskItemRepositoryTests : IClassFixture<LocalDbTestDatabase>
         Assert.Equal(requestedTask.CreatedAt, task.CreatedAt);
         Assert.Equal(requestedTask.UpdatedAt, task.UpdatedAt);
     }
+
+    [Fact]
+    public async Task GetByIdAsync_WhenTaskBelongsToUser_ReturnsTask()
+    {
+        var connectionFactory = database.CreateConnectionFactory();
+        var userRepository = new UserRepository(connectionFactory);
+        var taskRepository = new TaskItemRepository(connectionFactory);
+        var user = User.Create(UniqueEmail(), "hash");
+        await userRepository.AddAsync(user, CancellationToken.None);
+        var storedTask = TaskItem.Create(user.Id, "Find task", "Find by id", DateTime.UtcNow.AddDays(2));
+        await taskRepository.AddAsync(storedTask, CancellationToken.None);
+
+        var task = await taskRepository.GetByIdAsync(storedTask.Id, user.Id, CancellationToken.None);
+
+        Assert.NotNull(task);
+        Assert.Equal(storedTask.Id, task.Id);
+        Assert.Equal("Find task", task.Title);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_PersistsTaskChanges()
+    {
+        var connectionFactory = database.CreateConnectionFactory();
+        var userRepository = new UserRepository(connectionFactory);
+        var taskRepository = new TaskItemRepository(connectionFactory);
+        var user = User.Create(UniqueEmail(), "hash");
+        await userRepository.AddAsync(user, CancellationToken.None);
+        var storedTask = TaskItem.Create(user.Id, "Old title", "Old description", DateTime.UtcNow.AddDays(2));
+        await taskRepository.AddAsync(storedTask, CancellationToken.None);
+        var newDueDate = DateTime.UtcNow.AddDays(5);
+        storedTask.UpdateDetails("New title", "New description", newDueDate, TaskItemStatus.Completed);
+
+        await taskRepository.UpdateAsync(storedTask, CancellationToken.None);
+        var persistedTask = await taskRepository.GetByIdAsync(storedTask.Id, user.Id, CancellationToken.None);
+
+        Assert.NotNull(persistedTask);
+        Assert.Equal("New title", persistedTask.Title);
+        Assert.Equal("New description", persistedTask.Description);
+        Assert.Equal(newDueDate, persistedTask.DueDate);
+        Assert.Equal(TaskItemStatus.Completed, persistedTask.Status);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesOnlyRequestedUsersTask()
+    {
+        var connectionFactory = database.CreateConnectionFactory();
+        var userRepository = new UserRepository(connectionFactory);
+        var taskRepository = new TaskItemRepository(connectionFactory);
+        var requestedUser = User.Create(UniqueEmail(), "hash");
+        var otherUser = User.Create(UniqueEmail(), "hash");
+        await userRepository.AddAsync(requestedUser, CancellationToken.None);
+        await userRepository.AddAsync(otherUser, CancellationToken.None);
+        var requestedTask = TaskItem.Create(requestedUser.Id, "Delete task", "Remove this", DateTime.UtcNow.AddDays(2));
+        var otherTask = TaskItem.Create(otherUser.Id, "Keep task", "Keep this", DateTime.UtcNow.AddDays(2));
+        await taskRepository.AddAsync(requestedTask, CancellationToken.None);
+        await taskRepository.AddAsync(otherTask, CancellationToken.None);
+
+        await taskRepository.DeleteAsync(requestedTask.Id, requestedUser.Id, CancellationToken.None);
+        var deletedTask = await taskRepository.GetByIdAsync(requestedTask.Id, requestedUser.Id, CancellationToken.None);
+        var remainingTasks = await taskRepository.GetByUserIdAsync(otherUser.Id, CancellationToken.None);
+
+        Assert.Null(deletedTask);
+        Assert.Single(remainingTasks);
+    }
+
+    private static string UniqueEmail()
+    {
+        return $"user-{Guid.NewGuid():N}@ballastlane.com";
+    }
 }

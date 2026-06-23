@@ -111,6 +111,27 @@ public sealed class TaskItem
         Touch();
     }
 
+    public void UpdateDetails(
+        string title,
+        string? description,
+        DateTime dueDate,
+        TaskItemStatus status)
+    {
+        ValidateTitle(title);
+        ValidateDueDate(dueDate);
+
+        if (!Enum.IsDefined(status))
+        {
+            throw new DomainValidationException("Task status is invalid.");
+        }
+
+        Title = title.Trim();
+        Description = description?.Trim() ?? string.Empty;
+        DueDate = dueDate;
+        Status = status;
+        Touch();
+    }
+
     public void MarkInProgress()
     {
         Status = TaskItemStatus.InProgress;

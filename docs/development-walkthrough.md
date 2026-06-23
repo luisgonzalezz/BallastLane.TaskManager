@@ -142,8 +142,6 @@ AI suggestions were validated through:
 - Ensuring no prohibited libraries were introduced.
 - Keeping SQL/data access planned for manual ADO.NET.
 
-## 7. Next Planned Steps
-
 ## 7. Infrastructure Foundations
 
 The Infrastructure layer began with cross-cutting services and database scripts:
@@ -170,12 +168,24 @@ The next Infrastructure slice added real SQL Server LocalDB integration:
 
 This keeps the project compliant with the assignment restrictions: no Entity Framework, no Dapper, and no MediatR.
 
-## 9. Next Planned Steps
+## 9. Task CRUD Completion
+
+The task use case was expanded from create/list to full CRUD:
+
+- Domain now exposes `TaskItem.UpdateDetails(...)` so task changes continue to go through domain validation.
+- Application now exposes task get-by-id, update, and delete use cases.
+- `ApplicationNotFoundException` represents user-scoped missing records.
+- `ITaskItemRepository` now supports get-by-id, update, and delete operations.
+- `TaskItemRepository` implements the full CRUD flow with manual ADO.NET and parameterized SQL.
+- LocalDB integration tests verify create, read, update, delete, and user scoping.
+
+The service layer enforces ownership by always querying tasks with both task id and user id.
+
+## 10. Next Planned Steps
 
 The remaining implementation will continue in this order:
 
-1. Expand Application services for full task CRUD.
-2. ASP.NET Core controllers for auth and task CRUD.
-3. API integration tests.
-4. Angular authentication flow and task CRUD screens.
-5. Final README setup instructions and demo credentials.
+1. ASP.NET Core controllers for auth and task CRUD.
+2. API integration tests.
+3. Angular authentication flow and task CRUD screens.
+4. Final README setup instructions and demo credentials.
