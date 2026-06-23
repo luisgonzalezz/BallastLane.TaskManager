@@ -3,6 +3,7 @@ GO
 
 DECLARE @DemoUserId UNIQUEIDENTIFIER = '11111111-1111-1111-1111-111111111111';
 DECLARE @Now DATETIME2(7) = SYSUTCDATETIME();
+DECLARE @DemoPasswordHash NVARCHAR(512) = N'ctZQs2MfF64ii5QjAQOtGg==.+yd2b0SiPmazK9t8A3riv+6QOlgNy85/VAevlFHnZ9k=';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Id = @DemoUserId)
 BEGIN
@@ -11,9 +12,17 @@ BEGIN
     (
         @DemoUserId,
         N'demo@ballastlane.com',
-        N'demo-password-hash-placeholder',
+        @DemoPasswordHash,
         @Now
     );
+END;
+ELSE
+BEGIN
+    UPDATE dbo.Users
+    SET
+        Email = N'demo@ballastlane.com',
+        PasswordHash = @DemoPasswordHash
+    WHERE Id = @DemoUserId;
 END;
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Tasks WHERE UserId = @DemoUserId)
