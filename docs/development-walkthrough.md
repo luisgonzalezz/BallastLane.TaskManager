@@ -18,6 +18,17 @@ The exercise asks for a full-stack task management application using:
 
 The selected use case is a task management system where users register, log in, and manage their own tasks.
 
+Informal user story:
+
+`As a registered user, I want to securely sign in and manage my personal tasks, so that I can track pending, in-progress, and completed work from a web application.`
+
+Acceptance criteria:
+
+- A user can register and log in.
+- Authenticated users can create, read, update, and delete only their own tasks.
+- Each task has a title, description, status, and due date.
+- Anonymous users cannot access task endpoints or the task workspace.
+
 ## 2. Initial Solution Scaffold
 
 The solution was created with separate projects for each architectural layer:
@@ -134,6 +145,26 @@ GenAI was used as a pair-programming assistant to:
 - Review warnings and adjust contracts.
 - Produce documentation for the presentation.
 
+Representative prompt used for the API scaffold:
+
+```text
+Build a .NET 8 ASP.NET Core Web API for a task management system using Clean Architecture.
+The system must support user registration, login with JWT, and authenticated CRUD operations for tasks.
+Each task must include title, description, status, due date, and user ownership.
+Use SQL Server with manual ADO.NET repositories.
+Do not use Entity Framework, Dapper, MediatR, or other data-access abstractions.
+Write unit and integration tests and keep the architecture separated into Domain, Application, Infrastructure, and API layers.
+```
+
+Representative AI-assisted output shape:
+
+```text
+Domain: User, TaskItem, TaskItemStatus
+Application: AuthService, TaskItemService, repository and security abstractions
+Infrastructure: ADO.NET repositories, PasswordHasher, JwtTokenGenerator
+API: AuthController, TasksController, JWT authentication setup
+```
+
 AI suggestions were validated through:
 
 - Manual review of architecture boundaries.
@@ -141,6 +172,14 @@ AI suggestions were validated through:
 - Checking compiler warnings.
 - Ensuring no prohibited libraries were introduced.
 - Keeping SQL/data access planned for manual ADO.NET.
+
+Corrections and improvements made during implementation:
+
+- Persistence was implemented with manual `SqlConnection`, `SqlCommand`, and `SqlDataReader` mapping instead of ORM-style access.
+- Task access was scoped by authenticated user id to prevent cross-user reads or updates.
+- Domain and application validation were added for required fields, invalid credentials, not-found records, and ownership boundaries.
+- JWT protection was added on the API and Angular sides.
+- Demo credentials were seeded with a real PBKDF2 password hash.
 
 ## 7. Infrastructure Foundations
 

@@ -19,6 +19,17 @@ The backend is split into Domain, Application, Infrastructure, and API projects.
 
 The frontend lives in `src/BallastLane.TaskManager.Web` and consumes the API through Angular services, route guards, and an HTTP interceptor for JWT tokens.
 
+## User Story
+
+As a registered user, I want to securely sign in and manage my personal tasks, so that I can track pending, in-progress, and completed work from a web application.
+
+Acceptance criteria:
+
+- A user can register and log in.
+- Authenticated users can create, read, update, and delete only their own tasks.
+- Each task has a title, description, status, and due date.
+- Anonymous users cannot access task endpoints or the task workspace.
+
 ## Current Status
 
 The project currently includes:
@@ -125,12 +136,67 @@ The development sequence is documented in `docs/development-walkthrough.md`.
 
 ## GenAI Usage
 
-GenAI was used as a pair-programming assistant to:
+GenAI was used as a pair-programming assistant during the exercise. The tool was used to reason through requirements, propose an incremental Clean Architecture implementation plan, draft test-first implementation slices, review warnings, and prepare documentation.
 
-- Interpret the technical exercise requirements.
-- Propose the Clean Architecture solution structure.
-- Generate incremental implementation plans.
-- Draft tests and implementation slices.
-- Review warnings, documentation, and setup instructions.
+### Prompt Used
 
-All AI-generated suggestions were validated through manual review, automated tests, and alignment with the assignment constraints: no Entity Framework, no Dapper, no MediatR, manual ADO.NET data access, and clean separation between layers.
+The main prompt used for the API scaffold was:
+
+```text
+Build a .NET 8 ASP.NET Core Web API for a task management system using Clean Architecture.
+The system must support user registration, login with JWT, and authenticated CRUD operations for tasks.
+Each task must include title, description, status, due date, and user ownership.
+Use SQL Server with manual ADO.NET repositories.
+Do not use Entity Framework, Dapper, MediatR, or other data-access abstractions.
+Write unit and integration tests and keep the architecture separated into Domain, Application, Infrastructure, and API layers.
+```
+
+### Representative Output Sample
+
+The AI-assisted scaffold proposed the following kind of structure, which was then reviewed and implemented incrementally:
+
+```text
+Domain
+  User
+  TaskItem
+  TaskItemStatus
+
+Application
+  AuthService
+  TaskItemService
+  IUserRepository
+  ITaskItemRepository
+  IPasswordHasher
+  IJwtTokenGenerator
+
+Infrastructure
+  UserRepository
+  TaskItemRepository
+  PasswordHasher
+  JwtTokenGenerator
+
+API
+  AuthController
+  TasksController
+```
+
+### Validation And Corrections
+
+AI-generated suggestions were not accepted blindly. They were validated and corrected through:
+
+- Manual review of Clean Architecture dependency direction.
+- Test-driven development cycles for domain, application, infrastructure, API, and Angular behavior.
+- `dotnet test BallastLane.TaskManager.sln` for backend validation.
+- `npm test` and `npm run build` for frontend validation.
+- Manual end-to-end testing with LocalDB, the API, and Angular.
+- Package and code searches to confirm no Entity Framework, Dapper, or MediatR references were introduced.
+
+Notable corrections and improvements:
+
+- Replaced any ORM-style persistence ideas with manual `SqlConnection`, `SqlCommand`, and `SqlDataReader` mapping.
+- Added user-scoped task queries so authenticated users can only access their own tasks.
+- Added domain and application validation for required fields, invalid credentials, ownership, and not-found cases.
+- Added JWT route protection in both the API and Angular.
+- Added seeded demo credentials with a real PBKDF2 password hash.
+
+Edge cases considered include duplicate registration emails, invalid login credentials, blank task titles, missing task records, user ownership boundaries, unauthorized API requests, and CORS behavior for the Angular client.
