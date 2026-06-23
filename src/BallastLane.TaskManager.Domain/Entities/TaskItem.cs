@@ -64,6 +64,45 @@ public sealed class TaskItem
             now);
     }
 
+    public static TaskItem FromPersistence(
+        Guid id,
+        Guid userId,
+        string title,
+        string? description,
+        TaskItemStatus status,
+        DateTime dueDate,
+        DateTime createdAt,
+        DateTime updatedAt)
+    {
+        if (id == Guid.Empty)
+        {
+            throw new DomainValidationException("Task id is required.");
+        }
+
+        if (userId == Guid.Empty)
+        {
+            throw new DomainValidationException("Task must belong to a user.");
+        }
+
+        ValidateTitle(title);
+        ValidateDueDate(dueDate);
+
+        if (!Enum.IsDefined(status))
+        {
+            throw new DomainValidationException("Task status is invalid.");
+        }
+
+        return new TaskItem(
+            id,
+            userId,
+            title.Trim(),
+            description?.Trim() ?? string.Empty,
+            status,
+            dueDate,
+            createdAt,
+            updatedAt);
+    }
+
     public void Rename(string title)
     {
         ValidateTitle(title);

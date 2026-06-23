@@ -39,4 +39,24 @@ public sealed class User
 
         return new User(Guid.NewGuid(), email.Trim(), passwordHash, DateTime.UtcNow);
     }
+
+    public static User FromPersistence(Guid id, string email, string passwordHash, DateTime createdAt)
+    {
+        if (id == Guid.Empty)
+        {
+            throw new DomainValidationException("User id is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(email) || !EmailPattern.IsMatch(email))
+        {
+            throw new DomainValidationException("A valid email is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(passwordHash))
+        {
+            throw new DomainValidationException("Password hash is required.");
+        }
+
+        return new User(id, email.Trim(), passwordHash, createdAt);
+    }
 }

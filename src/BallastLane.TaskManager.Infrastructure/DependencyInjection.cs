@@ -1,5 +1,6 @@
 using BallastLane.TaskManager.Application.Abstractions;
 using BallastLane.TaskManager.Infrastructure.Data;
+using BallastLane.TaskManager.Infrastructure.Repositories;
 using BallastLane.TaskManager.Infrastructure.Security;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +13,8 @@ public static class DependencyInjection
         services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITaskItemRepository, TaskItemRepository>();
 
         return services;
     }

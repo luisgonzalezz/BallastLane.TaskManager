@@ -21,7 +21,21 @@ The frontend lives in `src/BallastLane.TaskManager.Web` and will consume the API
 
 ## Current Status
 
-This repository currently contains the initial solution scaffold only. Business logic, SQL schema, authentication, API endpoints, tests, and Angular screens will be added incrementally.
+This repository currently contains the Clean Architecture scaffold, Domain layer, Application layer, Infrastructure foundations, SQL Server LocalDB scripts, and manual ADO.NET repositories. API endpoints and Angular screens will be added incrementally.
+
+## Local Database
+
+The project is configured for SQL Server LocalDB during development:
+
+```text
+Server=(localdb)\MSSQLLocalDB;Database=BallastLaneTaskManager;Trusted_Connection=True;TrustServerCertificate=True;
+```
+
+Run the database scripts from the `database` folder using SQLCMD mode:
+
+```powershell
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i reset.sql
+```
 
 ## Presentation Notes
 

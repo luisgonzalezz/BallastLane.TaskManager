@@ -94,4 +94,33 @@ public sealed class TaskItemTests
 
         Assert.Equal("Task title is required.", exception.Message);
     }
+
+    [Fact]
+    public void FromPersistence_WithStoredValues_RehydratesTask()
+    {
+        var id = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var dueDate = DateTime.UtcNow.AddDays(2);
+        var createdAt = DateTime.UtcNow.AddDays(-2);
+        var updatedAt = DateTime.UtcNow.AddDays(-1);
+
+        var task = TaskItem.FromPersistence(
+            id,
+            userId,
+            "Stored task",
+            "Stored description",
+            TaskItemStatus.InProgress,
+            dueDate,
+            createdAt,
+            updatedAt);
+
+        Assert.Equal(id, task.Id);
+        Assert.Equal(userId, task.UserId);
+        Assert.Equal("Stored task", task.Title);
+        Assert.Equal("Stored description", task.Description);
+        Assert.Equal(TaskItemStatus.InProgress, task.Status);
+        Assert.Equal(dueDate, task.DueDate);
+        Assert.Equal(createdAt, task.CreatedAt);
+        Assert.Equal(updatedAt, task.UpdatedAt);
+    }
 }

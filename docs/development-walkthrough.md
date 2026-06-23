@@ -158,13 +158,24 @@ The Infrastructure layer began with cross-cutting services and database scripts:
 
 Infrastructure tests validate hashing, password verification, JWT claims, and connection string usage without requiring a live SQL Server connection yet.
 
-## 8. Next Planned Steps
+## 8. Manual ADO.NET Repositories
+
+The next Infrastructure slice added real SQL Server LocalDB integration:
+
+- `User.FromPersistence(...)` and `TaskItem.FromPersistence(...)` rehydrate stored records without using creation factories meant for new records.
+- `UserRepository` implements `IUserRepository` using `SqlConnection`, `SqlCommand`, and `SqlDataReader`.
+- `TaskItemRepository` implements `ITaskItemRepository` with manual SQL commands and manual mapping.
+- Repository tests create a temporary LocalDB database, create schema objects, run repository operations, and drop the database after the test fixture completes.
+- Date parameters are sent as `SqlDbType.DateTime2` to match the schema and avoid SQL Server `datetime` rounding.
+
+This keeps the project compliant with the assignment restrictions: no Entity Framework, no Dapper, and no MediatR.
+
+## 9. Next Planned Steps
 
 The remaining implementation will continue in this order:
 
-1. Manual ADO.NET repositories in Infrastructure.
-2. Dependency injection composition for repositories.
-3. ASP.NET Core controllers for auth and task CRUD.
-4. API integration tests.
-5. Angular authentication flow and task CRUD screens.
-6. Final README setup instructions and demo credentials.
+1. Expand Application services for full task CRUD.
+2. ASP.NET Core controllers for auth and task CRUD.
+3. API integration tests.
+4. Angular authentication flow and task CRUD screens.
+5. Final README setup instructions and demo credentials.
