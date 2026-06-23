@@ -222,8 +222,6 @@ Integration tests verify:
 
 This completes the backend API surface required for task CRUD and authentication.
 
-## 12. Next Planned Steps
-
 ## 12. End-to-End Backend Test
 
 An end-to-end backend integration test now exercises the full backend path:
@@ -243,9 +241,22 @@ The test creates a temporary LocalDB database, overrides the API connection stri
 
 This test gives presentation-ready evidence that the backend works as a connected system, not only as isolated units.
 
-## 13. Next Planned Steps
+## 13. Angular Authentication Foundation
+
+The first Angular slice connected the frontend to the authentication API shape:
+
+- `AuthService` calls `POST /api/auth/login` and `POST /api/auth/register`.
+- The JWT is stored in `localStorage` after successful login or registration.
+- `authInterceptor` adds the `Authorization: Bearer <token>` header for authenticated requests.
+- `authGuard` protects the task workspace and redirects anonymous users to `/login`.
+- Standalone Angular routes were added for `/login`, `/register`, and `/tasks`.
+- The protected task page currently provides the shell for the next task CRUD UI stage.
+
+Frontend tests cover session storage, logout behavior, bearer-token injection, and route protection. The Angular production build was also verified.
+
+## 14. Next Planned Steps
 
 The remaining implementation will continue in this order:
 
-1. Angular authentication flow and task CRUD screens.
+1. Angular task CRUD screens.
 2. Final README setup instructions and demo credentials.
