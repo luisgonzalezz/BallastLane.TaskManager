@@ -224,8 +224,28 @@ This completes the backend API surface required for task CRUD and authentication
 
 ## 12. Next Planned Steps
 
+## 12. End-to-End Backend Test
+
+An end-to-end backend integration test now exercises the full backend path:
+
+`HTTP API -> JWT auth -> Application services -> ADO.NET repositories -> SQL Server LocalDB`
+
+The test creates a temporary LocalDB database, overrides the API connection string for the test host, and then runs:
+
+- user registration.
+- user login.
+- task creation.
+- task listing.
+- task read by id.
+- task update.
+- task deletion.
+- verification that deleted tasks return `404 Not Found`.
+
+This test gives presentation-ready evidence that the backend works as a connected system, not only as isolated units.
+
+## 13. Next Planned Steps
+
 The remaining implementation will continue in this order:
 
-1. Connect API integration tests to real LocalDB services for end-to-end coverage.
-2. Angular authentication flow and task CRUD screens.
-3. Final README setup instructions and demo credentials.
+1. Angular authentication flow and task CRUD screens.
+2. Final README setup instructions and demo credentials.
