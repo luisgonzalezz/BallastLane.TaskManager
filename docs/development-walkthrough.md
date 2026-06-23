@@ -183,9 +183,31 @@ The service layer enforces ownership by always querying tasks with both task id 
 
 ## 10. Next Planned Steps
 
+## 10. API Authentication Slice
+
+The first API slice exposed authentication-related HTTP endpoints:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/public`
+- `GET /api/auth/private`
+
+`Program.cs` now registers Application services, Infrastructure services, CORS for Angular, JWT bearer authentication, and authorization middleware.
+
+The private endpoint uses `[Authorize]`, and integration tests verify:
+
+- public endpoints can be reached without a token.
+- private endpoints return `401 Unauthorized` without a token.
+- private endpoints accept a valid JWT.
+- register and login return authentication responses.
+
+For this slice, the API integration tests replace `IAuthService` with a fake service while still generating and validating real JWTs through the same signing configuration. This keeps the tests focused on routing, controller behavior, and authentication middleware.
+
+## 11. Next Planned Steps
+
 The remaining implementation will continue in this order:
 
-1. ASP.NET Core controllers for auth and task CRUD.
-2. API integration tests.
+1. ASP.NET Core `TasksController` for task CRUD.
+2. API integration tests for task endpoints.
 3. Angular authentication flow and task CRUD screens.
 4. Final README setup instructions and demo credentials.
